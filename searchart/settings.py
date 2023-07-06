@@ -1,12 +1,18 @@
 import os
 from os import getenv
 
+from dotenv import load_dotenv
+
 from pathlib import Path
+
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+load_dotenv()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -16,10 +22,8 @@ SECRET_KEY = getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = getenv('IS_DEVELOPMENT',True)
 
-# ALLOWED_HOSTS = ['localhost','127.0.0.1','192.168.8.14']
-ALLOWED_HOSTS = [
-    getenv('APP_HOSTS')
-]
+ALLOWED_HOSTS = [host.strip() for host in getenv('APP_HOSTS', '').split(',')]
+
 CORS_ORIGIN_ALLOW_ALL = True
 
 INTERNAL_IPS = [
@@ -83,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': getenv("DB_NAME"),
         'USER': getenv("DB_USER"),
-        'PASSWORD': getenv("DB_PASSWORD"),
+        'PASSWORD': getenv("DB_PASS"),
         'HOST': getenv("DB_HOST"),
         'PORT': getenv('DB_PORT'),
     }
