@@ -5,12 +5,8 @@ from dotenv import load_dotenv
 
 from pathlib import Path
 
-
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 load_dotenv()
 # Quick-start development settings - unsuitable for production
@@ -28,7 +24,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 INTERNAL_IPS = [
     # ...
-    getenv('INTERNAL_IPS')
+    ip.strip() for ip in getenv('INTERNAL_IPS', '').split(',')
     # ...
 ]
 
@@ -41,10 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
     'rest_framework',
-    'searchartapi.apps.SearchartapiConfig',
+    'debug_toolbar',
     'corsheaders',
-    'debug_toolbar'
+    
+    'apps.searchartapi.app.SearchartapiConfig',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
     'corsheaders.middleware.CorsMiddleware',
 ]
 
@@ -79,7 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'searchart.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
@@ -92,7 +90,12 @@ DATABASES = {
         'PORT': getenv('DB_PORT'),
     }
 }
-
+# DATABASES = {
+#   'default': {
+#      ...
+#     # 'OPTIONS': {'ssl': {'ca': os.environ.get('MYSQL_ATTR_SSL_CA')}}
+#   }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

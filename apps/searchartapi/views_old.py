@@ -15,11 +15,11 @@ from rest_framework import viewsets,status
 
 from .models import Sector, Subsector, Indicator, Country, YearData
 
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Decimal):
-            return str(obj)
-        return super().default(obj)  
+# class DecimalEncoder(json.JSONEncoder):
+#     def default(self, obj):
+#         if isinstance(obj, Decimal):
+#             return str(obj)
+#         return super().default(obj)  
 
 '''
     default values:
@@ -127,9 +127,10 @@ class ApiGetData(viewsets.ViewSet):
                                     'amount': data.amount,
                                     'year':data.year
                         })
-            lst.append(YearData.objects.filter(indicator__indicatorName = indicator_name,
-                                                    year=year)
-                                                                                        .values_list('amount','year'))
+            lst.append(YearData.objects
+                       .filter(indicator__indicatorName = indicator_name,
+                               year=year)
+                       .values_list('amount','year'))
             for queryset in lst:
                 for value in queryset:
                     amount_list.append(value[0])
@@ -234,7 +235,7 @@ class ApiGetData(viewsets.ViewSet):
         
         data = {'countries_data': 
             {
-                '%s'%country : [
+                country : [
                     {
                         'Country':country,
                         'Country_code_2':Country.objects.get(countryName=country).country_code_2,
@@ -316,4 +317,4 @@ def import_data(request):
                     year_data.save()
                     print(f"populated {count}")
                     count+=1
-        return render(request, 'searchartapi/import.html')
+    return render(request, 'searchartapi/import.html')
