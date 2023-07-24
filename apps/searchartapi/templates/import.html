@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSV Import</title>
+    <!-- Add your other CSS and JS imports here -->
+</head>
+<body>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file">
+        <button type="submit">Import</button>
+    </form>
+
+    <!-- Add a section to display progress -->
+    <div id="progress-container">
+        Progress: <span id="progress-message">Waiting for import to start...</span>
+    </div>
+
+    <script>
+        // WebSocket connection
+        const socket = new WebSocket('ws://' + window.location.host + '/import_progress/');
+
+        // Function to handle WebSocket messages
+        socket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            const progressMessage = data.message;
+            document.getElementById('progress-message').textContent = progressMessage;
+        };
+    </script>
+</body>
+</html>
