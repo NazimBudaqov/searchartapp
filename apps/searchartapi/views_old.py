@@ -1,13 +1,8 @@
 import csv
-from decimal import Decimal
-import json
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core import serializers
 from django.db.models import Min,Max
 from django.db.models import Prefetch
-from django.forms import model_to_dict
-from django.http import JsonResponse
 from django.shortcuts import render
 
 from rest_framework.response import Response
@@ -15,12 +10,13 @@ from rest_framework import viewsets,status
 
 from .models import Sector, Subsector, Indicator, Country, YearData
 
-# class DecimalEncoder(json.JSONEncoder):
-#     def default(self, obj):
-#         if isinstance(obj, Decimal):
-#             return str(obj)
-#         return super().default(obj)  
-
+'''
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return str(obj)
+        return super().default(obj)  
+'''
 '''
     default values:
         Sector: Economy

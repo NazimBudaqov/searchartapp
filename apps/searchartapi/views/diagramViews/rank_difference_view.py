@@ -10,7 +10,13 @@ from ...models import Country, YearData
 # can be accessed through both all_diagrams_data() requests and individual 
 # requests(to change diagram by selectable year1 and year2 values) 
 class RankDifferenceView(APIView):
-    def get(request='', def_request='', indicator_name='', country_name=''):
+
+    # def common_request(request,indicator_name, country_name):
+    #     return RankDifferenceView.get(def_request=request,
+    #                                   indicator_name=indicator_name, 
+    #                                   country_name=country_name)
+
+    def get(self='',request='', def_request='', indicator_name='', country_name=''):
         #to use request variable only
         if request!='':
             pass
@@ -24,7 +30,9 @@ class RankDifferenceView(APIView):
         if request.GET.get('year2'):
             year2 = int(request.GET.get('year2'))
         else:
-            indicator_countries_year_list = YearData.objects.filter(indicator__indicatorName=indicator_name,country__countryName__in=country_name.split(',')).aggregate(min_year = Min("year"),max_year = Max('year'))
+            indicator_countries_year_list = YearData.objects\
+            .filter(indicator__indicatorName=indicator_name,country__countryName__in=country_name.split(','))\
+            .aggregate(min_year = Min("year"),max_year = Max('year'))
             year2 = indicator_countries_year_list['max_year']
 
         each_country_year_data = []

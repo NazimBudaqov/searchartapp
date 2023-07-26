@@ -1,7 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.views import APIView
-
 from ...models import Country, YearData
 
 #diagram1 -  countries and theri amount by selected ranks
@@ -16,7 +15,7 @@ class AmountView(APIView):
             year_list = []
             
             for country_ in countries:
-                year_data = YearData.objects.filter(country=Country.objects.get(countryName=country_), indicator__indicatorName=indicator_name, year=year, rank__range=ranks)
+                year_data = YearData.objects.select_related('country','indicator').filter(country=Country.objects.get(countryName=country_), indicator__indicatorName=indicator_name, year=year, rank__range=ranks)
                 for data in year_data:
                     countries_by_rank.append({
                                     'country': data.country.countryName,

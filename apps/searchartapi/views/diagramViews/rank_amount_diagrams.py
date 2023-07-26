@@ -1,5 +1,6 @@
 from ...models import Country, YearData
 from rest_framework.views import APIView
+
 # diagram 3 and 4 display country name,code and code_2 and change of their ranks and amounts  
 # data accordingly for chosen countries over all available years, by given indicator.
 class RankAmountDiagrams(APIView):
