@@ -1,23 +1,22 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Min,Max
+from django.forms import model_to_dict
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 
-from ...models import Country, YearData
+# from django.db.models import Q
 
-#diagram 2 - rank difference of countries by given indciator and years
-# can be accessed through both all_diagrams_data() requests and individual 
-# requests(to change diagram by selectable year1 and year2 values) 
+from ...models import MainData
+
 class RankDifferenceView(APIView):
+    #diagram 2 - rank difference of countries by given indciator and years
 
-    # def common_request(request,indicator_name, country_name):
-    #     return RankDifferenceView.get(def_request=request,
-    #                                   indicator_name=indicator_name, 
-    #                                   country_name=country_name)
-
-    def get(self='',request='', def_request='', indicator_name='', country_name=''):
-        #to use request variable only
+    # can be accessed through both all_diagrams_data() requests and individual 
+    # requests(to change diagram by selectable year1 and year2 values) 
+    
+    def get(self='',request='', def_request=''):
         if request!='':
             pass
         else:
@@ -26,39 +25,45 @@ class RankDifferenceView(APIView):
             else:
                 return "false request"
         
+        indicator_name =  request.GET.get('indicator')
+        countries = str(request.GET.get('countries')).split(',')
         year1 = int(request.GET.get('year1'))
+        
+        queryset = MainData.objects.select_related('indicator').filter(indicator__indicatorName=indicator_name)
+
         if request.GET.get('year2'):
             year2 = int(request.GET.get('year2'))
         else:
-            indicator_countries_year_list = YearData.objects\
-            .filter(indicator__indicatorName=indicator_name,country__countryName__in=country_name.split(','))\
-            .aggregate(min_year = Min("year"),max_year = Max('year'))
-            year2 = indicator_countries_year_list['max_year']
+            years = set()
+            for data in queryset.filter(country__countryName__in=countries):
+                for item in data.json_data:
+                    years.add(item['year'])
+            year2 = max(years)        
 
         each_country_year_data = []
-
-        for country in country_name.split(','):
-            try :
-                country_code = Country.objects.get(countryName = country).country_code
-                country_code_2 = Country.objects.get(countryName = country).country_code_2
-                country_id = Country.objects.get(countryName = country).id
-                rank1 = YearData.objects.get(year = year1,
-                                                country=country_id,
-                                                indicator__indicatorName = indicator_name).rank
-                amount1 = YearData.objects.get(year = year1,
-                                                country=country_id,
-                                                indicator__indicatorName = indicator_name).amount
-                rank2 = YearData.objects.get(year = year2,
-                                                country=country_id,
-                                                indicator__indicatorName = indicator_name).rank
-                amount2 = YearData.objects.get(year = year2,
-                                                country=Country.objects.get(countryName = country),
-                                                indicator__indicatorName = indicator_name).amount
+        try:
+            # pass
+            for data in queryset.select_related('country').filter(country__countryName__in=countries):
+                rank1 = 0
+                rank2 = 0
+                amount1 = 0
+                amount2=0
+                for item in data.json_data:
+                    if item['year'] == year1:
+                        rank1 = item['rank']
+                        amount1 = item['amount']
+                    elif item['year'] == year2:
+                        rank2 = item['rank']
+                        amount2 = item['amount']
+                    else:
+                        continue
+                
+                country_obj = model_to_dict(data.country)
                 each_country_year_data.append(
                     {
-                        'country':country,
-                        'country_code':country_code,
-                        'country_code_2':country_code_2,
+                        'country':country_obj['countryName'],
+                        'country_code':country_obj['country_code'],
+                        'country_code_2':country_obj['country_code_2'],
                         'first_rank' : rank1,
                         'first_amount' : amount1,
                         'second_rank' : rank2,
@@ -66,9 +71,10 @@ class RankDifferenceView(APIView):
                         'rank_difference' : (rank2-rank1),
                         }
                 )
+               
+        except ObjectDoesNotExist:
+            pass
 
-            except ObjectDoesNotExist:
-                pass
         diagram2 = {
                 "indicator" : indicator_name,
                 "first_year" : year1,
@@ -77,7 +83,7 @@ class RankDifferenceView(APIView):
                 }
         
         if request!='' and request != def_request:
-            return Response(diagram2)
+            return Response(diagram2, status=status.HTTP_200_OK)
         else:
             if def_request!='':
                 return diagram2

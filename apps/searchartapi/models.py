@@ -44,8 +44,18 @@ class YearData(models.Model):
     year = models.IntegerField()
     rank = models.IntegerField()
     amount = models.DecimalField(max_digits=20, decimal_places=2)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    indicator = models.ForeignKey(Indicator, on_delete=models.RESTRICT, null=False) #forbid deletion of indicator that easily
-
+    country = models.CharField(max_length=100)
+    country_code = models.CharField(max_length=3, blank=True, null=True)
+    country_code_2 = models.CharField(max_length=2, blank=True, null=True)
+    indicator = models.CharField(max_length=160)
+    
     def __str__(self):
         return str(self.year)
+
+class MainData(models.Model):
+    country = models.ForeignKey(Country, on_delete=models.RESTRICT)
+    indicator = models.ForeignKey(Indicator, on_delete=models.CASCADE)
+    json_data = models.JSONField(null=True, blank=True)
+
+    def __str__(self):
+        return str(self.json_data)

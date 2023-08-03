@@ -1,10 +1,7 @@
 import re
 from django.contrib import admin
-from django.forms import inlineformset_factory
-from .models import Country,Sector,Subsector,Indicator,YearData
-from django.contrib.admin.models import LogEntry
-from django.contrib.admin.views.decorators import staff_member_required
-from django.http import HttpResponseRedirect
+# from .models import SectorAdmin,SubsectorAdmin,IndicatorAdmin,CountryAdmin
+from .models import MainData, Sector, Subsector, Indicator, Country
 
 class SubsectorInline(admin.TabularInline):
     model = Subsector
@@ -31,30 +28,36 @@ class IndicatorAdmin(admin.ModelAdmin):
     ordering = ['indicatorName']
 admin.site.register(Indicator, IndicatorAdmin)
 
-class YearDataInline(admin.TabularInline):
-    model = YearData
-    extra = 0
-    verbose_name = 'Year data'
-    verbose_name_plural = 'Each year data'
-    ordering = ['indicator', 'year']
-    readonly_fields = ('year','indicator')
+# class YearDataInline(admin.TabularInline):
+#     model = YearData
+#     extra = 0
+#     verbose_name = 'Year data'
+#     verbose_name_plural = 'Each year data'
+#     ordering = ['indicator', 'year']
+#     readonly_fields = ('year','indicator')
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        indicator_id = self.get_indicator_name(request)
-        last_indicator_id = None
-        if indicator_id:
-            matches = re.findall(r'\d+', indicator_id)
-            if matches:
-                last_indicator_id = matches[-1]
-        if last_indicator_id and last_indicator_id.isdigit():
-            return qs.filter(indicator__indicatorName=Indicator.objects.get(id=int(last_indicator_id)))
-    def get_indicator_name(self, request):
-        return request.GET.get('_changelist_filters', None)
+#     def get_queryset(self, request):
+#         qs = super().get_queryset(request)
+#         indicator_id = self.get_indicator_name(request)
+#         last_indicator_id = None
+#         if indicator_id:
+#             matches = re.findall(r'\d+', indicator_id)
+#             if matches:
+#                 last_indicator_id = matches[-1]
+#         if last_indicator_id and last_indicator_id.isdigit():
+#             return qs.filter(indicator__indicatorName=Indicator.objects.get(id=int(last_indicator_id)))
+#     def get_indicator_name(self, request):
+#         return request.GET.get('_changelist_filters', None)
+
+class MainDataAdmin(admin.ModelAdmin):
+    list_display = ['indicator',"country",'json_data']
+    list_filter = ['indicator']
+    ordering = ['indicator','country']
+admin.site.register(MainData, MainDataAdmin)
+
 
 @admin.register(Country)
 class CountryAdmin(admin.ModelAdmin):
     list_display = ['countryName', 'country_code', 'country_code_2']
-    inlines = [YearDataInline]
-    list_filter = ['indicator']
+    # inlines = [YearDataInline]
     ordering = ['countryName']

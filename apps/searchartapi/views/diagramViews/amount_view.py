@@ -1,44 +1,64 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms import model_to_dict
 
 from rest_framework.views import APIView
-from ...models import Country, YearData
+from ...models import Country, YearData, MainData
+from rest_framework.generics import ListAPIView
+from rest_framework.response import Response
+from rest_framework import status
 
-#diagram1 -  countries and theri amount by selected ranks
+from django.http import HttpResponse, JsonResponse
+from django.db.models import Min, Max, Q
+
+#diagram1 -  countries and their amount by selected ranks and year
 class AmountView(APIView):
-    def get(year, ranks, indicator_name, country_name):
-        try:
-            lst = []
-            countries = country_name.split(',')
-            countries_by_rank = []
-            result = {}
-            amount_list = []
-            year_list = []
-            
-            for country_ in countries:
-                year_data = YearData.objects.select_related('country','indicator').filter(country=Country.objects.get(countryName=country_), indicator__indicatorName=indicator_name, year=year, rank__range=ranks)
-                for data in year_data:
-                    countries_by_rank.append({
-                                    'country': data.country.countryName,
-                                    'country_code': data.country.country_code,
-                                    'country_code_2': data.country.country_code_2,
-                                    'rank': data.rank,
-                                    'amount': data.amount,
-                                    'year':data.year
-                        })
-            lst.append(YearData.objects
-                       .filter(indicator__indicatorName = indicator_name,
-                               year=year)
-                       .values_list('amount','year'))
-            for queryset in lst:
-                for value in queryset:
-                    amount_list.append(value[0])
-                    year_list.append(value[1])
-            countries_by_rank = sorted(countries_by_rank, key=lambda x: x["amount"],reverse=True) #sort values by amount
-            result['min_amount'] = min(amount_list,default="EMPTY")
-            result['max_amount'] = max(amount_list,default="EMPTY")
-            result['countries_by_rank'] = countries_by_rank
 
-            return result
+    def get(self='',request='',def_request=''):
+        if request!='':
+            pass
+        else:
+            if def_request!='':
+                request=def_request
+            else:
+                return "false request"
+        
+        indicator_name = request.GET.get('indicator')
+        countries = str(request.GET.get('countries')).split(',')
+        year1 = int(request.GET.get('year1'))
+        ranks = list(map(int,str(request.GET.get('ranks')).split(','))) 
 
-        except ObjectDoesNotExist:
-            return "No country or data found for the given criteria"
+        queryset = MainData.objects.select_related('indicator').filter(indicator__indicatorName=indicator_name)
+        result = {}
+
+        amounts = []
+        for data in queryset.filter(Q(json_data__year=year1) | Q(json_data__year__isnull=True)):
+            for item in data.json_data:
+                if(item['year'] == year1):
+                    amounts.append(item['amount'])
+
+        result['min_amount'] = min(amounts)
+        result['max_amount'] = max(amounts)
+        
+        result['countries_by_rank'] = []
+        for data in queryset.select_related('country').filter(country__countryName__in=countries):
+            for dict in data.json_data:
+                if (dict['year'] == year1) and int(dict['rank']) in range(ranks[0],ranks[1]+1):
+                    country_obj = model_to_dict(data.country)
+                    result['countries_by_rank'].append(
+                        {
+                            'country': country_obj['countryName'],
+                            'country_code': country_obj['country_code'],
+                            'country_code_2': country_obj['country_code_2'],
+                            'rank': dict['rank'],
+                            'amount': dict['amount'],
+                            'year':dict['year']
+                        }
+                    )
+        
+        result['countries_by_rank'] = sorted(result['countries_by_rank'], key=lambda x: x["amount"],reverse=True) #sort values by amount
+
+        if request!='' and request != def_request:
+            return Response(result, status=status.HTTP_200_OK)
+        else:
+            if def_request!='':
+                return result

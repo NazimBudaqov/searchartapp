@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
         "./apps/searchartapi/views/diagramViews"
-    ]
+    ],
+    "vscode-autosave.debounceMs": 0
 }

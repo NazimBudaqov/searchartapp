@@ -3,18 +3,16 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    #1
     path('', SelectorDataView.as_view({'get':'get'}), name='get-default-data'),
-    path('countries-data/<str:indicator_name>/', SelectorDataView.as_view({'get':'get_related_countries_data'}), name='get-countries-and-ranks'),
-    path('available-years/<str:indicator_name>/<str:country_name>/', SelectorDataView.as_view({'get':'get_available_years'}), name='get-years'),
+    path('countries-data/<str:indicator_name>/', SelectorDataView.as_view({'get':'get_related_countries_data'}), name='get-related-countries'),
+    path('available-years/<str:indicator_name>/<str:country_name>/', SelectorDataView.as_view({'get':'get_available_years'}), name='get-available-years'),
     
-    #2 #?year1=2010&year2=2020&ranks=4,5
-    path('<str:indicator_name>/<str:country_name>/', AllDiagramsView.as_view(),name='years-data'),
-    #only second diagram
-    path('request/<str:indicator_name>/<str:country_name>/', RankDifferenceView.as_view(),name='update-diagram2-data'),
+    #?year1=2010&year2=2020&ranks=5,172
+    path('diagramsData/', AllDiagramsView.as_view(),name='years-data'),
     
-    #3
+    path('by_amount/', AmountView.as_view(), name='diagram1-only'),
+    path('rank_diff/', RankDifferenceView.as_view(),name='diagram2-only'),
+    path('years_data/', RankAmountDiagrams.as_view(),name='diagram3&4-only'),
+
     path('import/', ImportView.as_view(), name='import-data'),
 ]
-
-# path('2/<str:indicator_name>/<str:country_name>/', ApiGetData.as_view({'get':'get_data_by_indicator'}), name='indicator-data'),

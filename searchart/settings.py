@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'corsheaders',
     'channels',
+
+    'django_filters',
     
     'apps.searchartapi.app.SearchartapiConfig',
 ]
@@ -144,4 +146,10 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS' : (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
 }
