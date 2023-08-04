@@ -4,7 +4,7 @@ from rest_framework import status
 
 from django.db.models import Prefetch
 
-from ...models import Sector, Subsector, Country, YearData 
+from ...models import Sector, Subsector 
 
 
 class SectSubsectIndicaView(APIView):

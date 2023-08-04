@@ -1,6 +1,5 @@
 import re
 from django.contrib import admin
-# from .models import SectorAdmin,SubsectorAdmin,IndicatorAdmin,CountryAdmin
 from .models import MainData, Sector, Subsector, Indicator, Country
 
 class SubsectorInline(admin.TabularInline):

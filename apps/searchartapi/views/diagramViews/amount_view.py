@@ -1,14 +1,11 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.forms import model_to_dict
 
 from rest_framework.views import APIView
-from ...models import Country, YearData, MainData
-from rest_framework.generics import ListAPIView
+from ...models import MainData
 from rest_framework.response import Response
 from rest_framework import status
 
-from django.http import HttpResponse, JsonResponse
-from django.db.models import Min, Max, Q
+from django.db.models import Q
 
 #diagram1 -  countries and their amount by selected ranks and year
 class AmountView(APIView):

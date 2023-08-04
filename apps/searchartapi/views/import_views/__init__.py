@@ -5,7 +5,7 @@ from django.shortcuts import render
 
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
-from ...models import Sector, Subsector, Indicator, Country, YearData, MainData
+from ...models import Sector, Subsector, Indicator, Country, MainData
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync

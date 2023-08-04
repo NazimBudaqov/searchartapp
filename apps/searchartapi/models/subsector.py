@@ -1,5 +1,6 @@
 from django.db import models
-from ..sector.model import Sector
+
+from .sector import Sector
 
 class Subsector(models.Model):
     subSectorName = models.CharField(max_length=100)
@@ -9,4 +10,3 @@ class Subsector(models.Model):
     class Meta:
         verbose_name = 'Subsector'
         verbose_name_plural = 'Subsectors'
-    pass

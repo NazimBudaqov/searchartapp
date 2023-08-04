@@ -1,6 +1,6 @@
 from django.db import models
 # from ..subsector.model import Subsector
-from .. import Subsector
+from .subsector import Subsector
 
 class Indicator(models.Model):
     indicatorName = models.CharField(max_length=160)
