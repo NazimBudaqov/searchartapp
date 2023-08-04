@@ -31,41 +31,42 @@ class RankAmountDiagrams(APIView):
         rank_list = []
         year_list = set()
         result['countries_data'] = []
-
-        for data in queryset:        
-            for item in data.json_data:
-                amount_list.append(item['amount'])
-                rank_list.append(item['rank'])
-                year_list.add(item['year'])
         
         countries_filtered_by_rank = []
         for data in queryset.filter(country__countryName__in=countries):
             for item in data.json_data:
-                if item['year'] == year and ranks[0] <= item['rank'] <= ranks[1]:
+                if item['year'] == year and ranks[0] <= item['rank'] <= ranks[1]+1:
                     countries_filtered_by_rank.append(model_to_dict(data.country)['countryName']) #(model_to_dict(data.country)['countryName'],'rank',item['rank'],'year',item['year'])
         
         for data in queryset.filter(country__countryName__in=countries_filtered_by_rank):
             country_obj = model_to_dict(data.country)
-            result['countries_data'].append(
-                {
-                    'country' : [
+            result['countries_data'].append({'country':[]})
+            for item in data.json_data:
+                if item['rank'] in range(ranks[0],ranks[1]+1):
+                    result['countries_data'][-1]['country'].append(
                         {
                             'Country':country_obj['countryName'],
                             'Country_code_2':country_obj['country_code_2'],
                             'Year': item['year'],
                             'Rank': item['rank'],
                             'Amount': item['amount']
-                        }for item in data.json_data if item['rank'] in range(ranks[0],ranks[1]+1)
-                    ]
-                }
-            )
+                            }
+                    )
 
+                    amount_list.append(item['amount'])
+                    rank_list.append(item['rank'])
+                    year_list.add(item['year'])
+
+        # result['countries_data'] = sorted(result['countries_data'])
         result['min_rank'] = min(ranks,default="EMPTY")
         result['max_rank'] = max(ranks,default="EMPTY")
         result['min_amount'] = min(amount_list,default="EMPTY")
         result['max_amount'] = max(amount_list,default="EMPTY")
         result['year1'] = min(year_list,default="EMPTY")
         result['year2'] = max(year_list,default="EMPTY")
+
+        print('amounts: ', amount_list)
+        print('max_rank: ',result['max_rank'], 'min_rank: ', result['min_rank'])
 
         if request!='' and request != def_request:
             return Response(result, status=status.HTTP_200_OK)

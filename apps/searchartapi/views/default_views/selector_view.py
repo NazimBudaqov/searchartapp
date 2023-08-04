@@ -1,5 +1,4 @@
-from django.db.models import Min,Max
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Min,Max
 
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -68,7 +67,7 @@ class SelectorDataView(viewsets.ViewSet):
         }
         
         return Response(data)
-    
+
     #returns year for corresponding countries in given indicator
     def get_available_years(self,request,indicator_name,country_name): 
         years = []

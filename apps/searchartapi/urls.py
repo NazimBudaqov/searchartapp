@@ -3,9 +3,10 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('', SelectorDataView.as_view({'get':'get'}), name='get-default-data'),
-    path('countries-data/<str:indicator_name>/', SelectorDataView.as_view({'get':'get_related_countries_data'}), name='get-related-countries'),
-    path('available-years/<str:indicator_name>/<str:country_name>/', SelectorDataView.as_view({'get':'get_available_years'}), name='get-available-years'),
+    path('', SectSubsectIndicaView.as_view(), name='get-default-data'),
+    path('countries-data/<str:indicator_name>/', CountriesView.as_view(), name='get-related-countries'),
+    path('available-years/', AvailableYearsView.as_view(), name='get-available-years'),
+    path('ranks/', AvailableRanksView.as_view(), name='get-available-ranks'),
     
     #?year1=2010&year2=2020&ranks=5,172
     path('diagramsData/', AllDiagramsView.as_view(),name='years-data'),

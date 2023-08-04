@@ -47,30 +47,31 @@ class RankDifferenceView(APIView):
                 rank1 = 0
                 rank2 = 0
                 amount1 = 0
-                amount2=0
+                amount2= 0
                 for item in data.json_data:
                     if item['year'] == year1:
                         rank1 = item['rank']
                         amount1 = item['amount']
-                    elif item['year'] == year2:
+                    if item['year'] == year2:
                         rank2 = item['rank']
                         amount2 = item['amount']
                     else:
                         continue
-                
-                country_obj = model_to_dict(data.country)
-                each_country_year_data.append(
-                    {
-                        'country':country_obj['countryName'],
-                        'country_code':country_obj['country_code'],
-                        'country_code_2':country_obj['country_code_2'],
-                        'first_rank' : rank1,
-                        'first_amount' : amount1,
-                        'second_rank' : rank2,
-                        'second_amount' : amount2,
-                        'rank_difference' : (rank2-rank1),
-                        }
-                )
+
+                if rank1 != 0 and rank2 != 0:
+                    country_obj = model_to_dict(data.country)
+                    each_country_year_data.append(
+                        {
+                            'country':country_obj['countryName'],
+                            'country_code':country_obj['country_code'],
+                            'country_code_2':country_obj['country_code_2'],
+                            'first_rank' : rank1,
+                            'first_amount' : amount1,
+                            'second_rank' : rank2,
+                            'second_amount' : amount2,
+                            'rank_difference' : (rank2-rank1),
+                            }
+                    )
                
         except ObjectDoesNotExist:
             pass

@@ -50,9 +50,11 @@ admin.site.register(Indicator, IndicatorAdmin)
 #         return request.GET.get('_changelist_filters', None)
 
 class MainDataAdmin(admin.ModelAdmin):
-    list_display = ['indicator',"country",'json_data']
+    list_display = ["country",'indicator']
     list_filter = ['indicator']
     ordering = ['indicator','country']
+    readonly_fields = ('indicator','json_data')
+
 admin.site.register(MainData, MainDataAdmin)
 
 
