@@ -1,0 +1,10 @@
+SECRET_KEY=django-insecure-*k_l)l!h8x8(&_a__u#cdy*iqp0^9uhgfsbwp=@tw+ruh2&yk9j
+IS_DEVELOPMENT = True
+APP_HOSTS = localhost, 127.0.0.1, 192.168.8.66
+INTERNAL_IPS = 127.0.0.1,localhost, 192.168.8.66
+
+DB_NAME="searchart"
+DB_USER="root"
+DB_PASS="mysql1234"
+DB_HOST = "localhost"
+DB_PORT = "3306"
