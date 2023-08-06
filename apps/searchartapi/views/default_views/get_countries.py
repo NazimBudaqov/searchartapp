@@ -8,7 +8,6 @@ from ...models import Country
 class CountriesView(APIView):
     # returns countries and extreme ranks for given indicator and year
     def get(self, request, indicator_name):
-
         countries = []
         countries_data = (
             Country.objects.order_by("countryName")
