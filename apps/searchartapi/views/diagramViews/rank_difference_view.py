@@ -23,7 +23,7 @@ class RankDifferenceView(APIView):
                 return "false request"
         
         indicator_name =  request.GET.get('indicator')
-        countries = str(request.GET.get('countries')).split(',')
+        countries = str(request.GET.get('countries')).split(';')
         year1 = int(request.GET.get('year1'))
         
         queryset = MainData.objects.select_related('indicator').filter(indicator__indicatorName=indicator_name)

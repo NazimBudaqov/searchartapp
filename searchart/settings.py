@@ -85,12 +85,8 @@ WSGI_APPLICATION = 'searchart.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': getenv("DB_NAME"),
-        'USER': getenv("DB_USER"),
-        'PASSWORD': getenv("DB_PASS"),
-        'HOST': getenv("DB_HOST"),
-        'PORT': getenv('DB_PORT'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 # DATABASES = {
